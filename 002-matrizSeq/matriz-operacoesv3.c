@@ -30,6 +30,34 @@ mymatriz *msomar (mymatriz *mat_a, mymatriz *mat_b, int tipo) {
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mymatriz *mmultiplicar (mymatriz *mat_a, mymatriz *mat_b, int tipo) {
+	mymatriz *mat_c = NULL;
 
-	return msomar(mat_a, mat_b, tipo);
+	if (mat_a->col != mat_b->lin){
+		printf ("Erro: Matrizes incompatíveis!\n");
+		exit(1);
+	}
+
+	mat_c = (mymatriz *) malloc (sizeof(mymatriz));
+	mat_c->lin = mat_a->lin;
+	mat_c->col = mat_b->col;
+
+	if (malocar(mat_c)) { printf ("Error: Out of memory\n"); }
+
+	for (int i = 0; i < mat_c->lin; ++i)
+		for (int j = 0; j < mat_c->col; ++j)
+			mat_c->matriz[i][j] = 0;
+
+	if (tipo == 1) {
+		for (int i = 0; i < mat_c->lin; ++i)
+			for (int j = 0; j < mat_c->col; ++j)
+				for (int k = 0; k < mat_a->col; ++k)
+					mat_c->matriz[i][j] += (mat_a->matriz[i][k] * mat_b->matriz[k][j]);
+	}
+	else {
+		for (int j = 0; j < mat_c->col; ++j)
+			for (int i = 0; i < mat_c->lin; ++i)
+				for (int k = 0; k < mat_a->col; ++k)
+					mat_c->matriz[i][j] += (mat_a->matriz[i][k] * mat_b->matriz[k][j]);
+	}
+	return mat_c;
 }

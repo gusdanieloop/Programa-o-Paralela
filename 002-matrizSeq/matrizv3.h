@@ -13,17 +13,14 @@ typedef struct {
 
 typedef struct {
   int **matriz;
-  bloco_t *bloco;
-  int mat_col;
-  int mat_lin;
-  int divisor;
-} matriz_bloco_t;
-
-typedef struct {
-  int **matriz;
   int lin;
   int col;
 } mymatriz;
+
+typedef struct {
+  mymatriz* matriz;
+  bloco_t* bloco;
+} matriz_bloco_t;
 #endif
 
 // gerência de matrizes

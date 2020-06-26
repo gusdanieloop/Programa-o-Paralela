@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
 	// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 	//                 Operações de Adição
-	mat_soma = (mymatriz **) calloc (2,sizeof(mymatriz *));
+	/*mat_soma = (mymatriz **) calloc (2,sizeof(mymatriz *));
 	for (int ii=0; ii < 2; ii++) {
 		printf("\n ##### somar_t%d de Matrizes #####\n", ii);
 		start_time = wtime();
@@ -78,14 +78,14 @@ int main(int argc, char *argv[]) {
 		fmat = fopen(filename,"w");
 		fileout_matriz(mat_soma[ii], fmat);
 		fclose(fmat);
-	}
+	}*/
 	// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
-	printf("\n%%%%%%%%%%%%%%%%\n");
+	//printf("\n%%%%%%%%%%%%%%%%\n");
 
 	// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 	//               Operações de Multiplicação
-	mat_mult = (mymatriz **) malloc (sizeof(mymatriz *)*6);
+	/*mat_mult = (mymatriz **) malloc (sizeof(mymatriz *)*6);
 	for (int ii=0; ii < 6; ii++) {
 		printf("\n ##### multiplicar_t%d de Matrizes #####\n", ii);
 		start_time = wtime();
@@ -97,12 +97,12 @@ int main(int argc, char *argv[]) {
 		fmat = fopen(filename,"w");
 		fileout_matriz(mat_mult[ii], fmat);
 		fclose(fmat);
-	}
+	}*/
 	// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 	// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
 	//              Comparação dos resultados
-	printf("\n ##### Comparação dos resultados da adição de matrizes #####\n");
+	/*printf("\n ##### Comparação dos resultados da adição de matrizes #####\n");
 	printf("[soma_t0 vs soma_t1]\t");
 	mcomparar (mat_soma[0],mat_soma[1]);
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 	for (int i=1; i<6; i++) {
 		printf("[mult_t0 vs mult_t%d]\t", i);
 		mcomparar (mat_mult[0],mat_mult[i]);
-	}
+	}*/
 	// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
 
 	// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%

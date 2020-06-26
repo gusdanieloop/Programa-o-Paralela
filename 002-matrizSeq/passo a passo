@@ -1,0 +1,144 @@
+#include "matriz-operacoes-threads.h"
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+int main(int argc, char *argv[]) {
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+	// DECLARAÇÃO de VARIÁVEIS
+
+  (....)
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+	if (argc != 3){
+
+		printf ("ERRO: Numero de parametros %s <matriz_a> <matriz_b>\n", argv[0]);
+
+		exit (1);
+
+	}
+
+ // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+        LER MATRIZ_A
+
+	LER MATRIZ_B
+
+       CRIAR MATRIZ_C
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+// Multiplicação Sequencial
+
+ LOOP (2x)
+
+	MARCAR_TEMPO INICIO
+
+	MATRIZ_SeqC = MULTIPLICAR MATRIZ_A x MATRIZ_B
+
+	MARCAR_TEMPO FIM
+
+	GRAVAR_DISCO MATRIZ_SeqC
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+// Multiplicação Sequencial em Bloco
+
+	DEFINIR N (numero de pedacos entre 2 e 20)
+
+ LOOP (2x)
+
+	MARCAR_TEMPO INICIO
+
+	PARTICIONAR_MATRIZ em N pedacos
+
+	MATRIZ_SeqBlC = MULTIPLICARBLOCOS MATRIZ_A x MATRIZ_B
+
+	MARCAR_TEMPO FIM
+
+	GRAVAR_DISCO MATRIZ_SeqBlC
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+// Multiplicação MultiThread
+
+ LOOP (2x)
+
+        MARCAR_TEMPO INICIO
+
+	MATRIZ_SeqC = MULTIPLICARMULTITHREADS MATRIZ_A x MATRIZ_B
+
+	MARCAR_TEMPO FIM
+
+	GRAVAR_DISCO MATRIZ_ThreadC
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+// Multiplicação MultiThreads em Bloco
+
+	N = mesmo nro de blocos da Sequencial
+
+ LOOP (2x)
+
+	MARCAR_TEMPO INICIO
+
+	PARTICIONAR_MATRIZ em N pedacos
+
+	MATRIZ_SeqBlC = MULTIPLICARBLOCOSMultithreads MATRIZ_A x MATRIZ_B
+
+	MARCAR_TEMPO FIM
+
+	GRAVAR_DISCO MATRIZ_ThreadBlC
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+
+// Comparar resultados e tempos
+
+        (print) COMPARAR MATRIZ_SeqC c/ MATRIZ_SeqBlC
+
+        (print) COMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadC
+
+	(print) COMPARAR MATRIZ_SeqC c/ MATRIZ_ThreadBlC
+
+	(print) TEMPO_MEDIO MATRIZ_SeqC 
+
+	(print) TEMPO_MEDIO MATRIZ_SeqBlC
+
+	(print) TEMPO_MEDIO MATRIZ_ThreadC
+
+	(print) TEMPO_MEDIO MATRIZ_ThreadBlC
+
+        (print) SPEEDUP (MATRIZ_C)
+
+        (print) SPEEDUP (MATRIZ_BLC)
+
+  // %%%%%%%%%%%%%%%%%%%%%%%% BEGIN %%%%%%%%%%%%%%%%%%%%%%%%
+
+// LIBERAR MEMÓRIA
+
+	LIBERAR MATRIZES
+
+	FECHAR ARQUIVOS
+
+// %%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%
+

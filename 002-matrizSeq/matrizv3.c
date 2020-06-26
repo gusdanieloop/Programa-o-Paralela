@@ -103,41 +103,41 @@ int mcomparar (mymatriz *mat_a, mymatriz *mat_b){
 
 
 // // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// int gerar_submatriz (int **mat_origem, matriz_bloco_t *submatriz, bloco_t *bloco) {
-//   bloco_t *newblock;
-//
-// 	submatriz->matriz = mat_origem;
-//
-// 	newblock = (bloco_t *) malloc (sizeof(bloco_t));
-//   newblock->lin_inicio = bloco->lin_inicio;
-//   newblock->lin_fim = bloco->lin_fim;
-//   newblock->col_inicio = bloco->col_inicio;
-//   newblock->col_fim = bloco->col_fim;
-//   //printf ("Estrutura lin_inicio %d,%d\n", newblock.lin_inicio, bloco->lin_inicio);
-//   submatriz->bloco = newblock;
-//   //printf ("Estrutura submatriz_lin_inicio %d\n", submatriz->bloco->lin_inicio);
-//   return 0;
-// }
-//
-// // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// int imprimir_submatriz (matriz_bloco_t *submatriz){
-// 	// printf ("Estrutura %d,%d,%d,%d\n", submatriz->bloco->lin_inicio,
-// 	// submatriz->bloco->lin_fim,
-// 	// submatriz->bloco->col_inicio,
-// 	// submatriz->bloco->col_fim);
-//
-// 	for (int j = submatriz->bloco->col_inicio; j <= submatriz->bloco->col_fim; j++)
-// 	printf("\t(%d)", j);
-// 	printf("\n");
-// 	for (int i= submatriz->bloco->lin_inicio; i <= submatriz->bloco->lin_fim; i++) {
-// 		printf("(%d)", i);
-// 		for (int j= submatriz->bloco->col_inicio; j <= submatriz->bloco->col_fim; j++){
-// 			printf("\t%d", submatriz->matriz[i][j]);
-// 		}
-// 		printf("\n");
-// 	}
-// 	return 0;
-// }
+int gerar_submatriz (int** mat_origem, matriz_bloco_t* submatriz, bloco_t* bloco) {
+    bloco_t* newblock;
+
+	submatriz->matriz->matriz = mat_origem;
+
+ 	newblock = (bloco_t*) malloc (sizeof(bloco_t));
+   	newblock->lin_inicio = bloco->lin_inicio;
+   	newblock->lin_fim = bloco->lin_fim;
+   	newblock->col_inicio = bloco->col_inicio;
+   	newblock->col_fim = bloco->col_fim;
+   	//printf ("Estrutura lin_inicio %d,%d\n", newblock.lin_inicio, bloco->lin_inicio);
+   	submatriz->bloco = newblock;
+   	//printf ("Estrutura submatriz_lin_inicio %d\n", submatriz->bloco->lin_inicio);
+   	return 0;
+}
+
+ // //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int imprimir_submatriz (matriz_bloco_t* submatriz){
+ 	// printf ("Estrutura %d,%d,%d,%d\n", submatriz->bloco->lin_inicio,
+ 	// submatriz->bloco->lin_fim,
+ 	// submatriz->bloco->col_inicio,
+ 	// submatriz->bloco->col_fim);
+
+ 	for (int j = submatriz->bloco->col_inicio; j <= submatriz->bloco->col_fim; j++)
+ 		printf("\t(%d)", j);
+ 	printf("\n");
+ 	for (int i= submatriz->bloco->lin_inicio; i <= submatriz->bloco->lin_fim; i++) {
+ 		printf("(%d)", i);
+ 		for (int j= submatriz->bloco->col_inicio; j <= submatriz->bloco->col_fim; j++){
+ 			printf("\t%d", submatriz->matriz->matriz[i][j]);
+ 		}
+ 		printf("\n");
+ 	}
+ 	return 0;
+}
 //
 // // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // int imprimir_bloco (matriz_bloco_t *submatriz) {

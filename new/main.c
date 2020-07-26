@@ -2,17 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <pthread.h>
 
 #include "matriz.h"
 #include "matriz_op.h"
 
 int main(int argc, char *argv[]) {
+    struct timespec start, end;
     clock_t start_soma, end_soma, start_seq, end_seq, start_bloco, end_bloco, start_thread, end_thread;
     double time;
     int n = 30, m = 30;
-    int qnt = 100;
-    int n_threads = 4;
+    int qnt = 10;
+    int n_threads = 10;
     init_random();
 
     if(n_threads > qnt){
@@ -32,32 +35,69 @@ int main(int argc, char *argv[]) {
     //m_print(m_b);
     matrix** b_b = divide(m_b, 0, qnt);
     matrix* m_c;
-    /*
+     
     printf("soma seq\n");
-    start_soma = clock();
+    //start_soma = clock();
+    //end_soma = clock();
+    //time = ((double) (end_soma - start_soma)) / CLOCKS_PER_SEC;
+    //printf("levou %f\n", time);
+    //m_print(m_c);
+    clock_gettime(CLOCK_REALTIME, &start); 
     m_c = m_plus(m_a, m_a);
-    end_soma = clock();
-    time = ((double) (end_soma - start_soma)) / CLOCKS_PER_SEC;
-    printf("levou %f\n", time);
-    //m_print(m_c);
-
-    printf("\nmult seq\n");
-    start_seq = clock();
-    m_c = m_mult(m_a, m_b);
-    end_seq = clock();
-    time = ((double) (end_seq - start_seq)) / CLOCKS_PER_SEC;
-    printf("levou %f\n", time);
-    //m_print(m_c);
-
-    printf("\nmult bloco\n");
-    start_bloco = clock();
-    m_c = b_mult(b_a, b_b, qnt);
-    end_bloco = clock();
-    time = ((double) (end_bloco - start_bloco)) / CLOCKS_PER_SEC;
-    printf("levou %f\n", time);
-    //m_print(m_c);
+    //end_bloco = clock();
+    //time = ((double) (end_bloco - start_bloco)) / CLOCKS_PER_SEC;
+    clock_gettime(CLOCK_REALTIME, &end); 
+    long seconds = end.tv_sec - start.tv_sec; 
+    long ns = end.tv_nsec - start.tv_nsec;
+    if (start.tv_nsec > end.tv_nsec) { // clock underflow 
+	    --seconds; 
+	    ns += 1000000000; 
+    }  
+    printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    m_free(m_c);
     
-    */
+    printf("\nmult seq\n");
+    //start_seq = clock();
+    //end_seq = clock();
+    //time = ((double) (end_seq - start_seq)) / CLOCKS_PER_SEC;
+    //printf("levou %f\n", time);
+    //m_print(m_c);
+    clock_gettime(CLOCK_REALTIME, &start); 
+    m_c = m_mult(m_a, m_b);
+    //end_bloco = clock();
+    //time = ((double) (end_bloco - start_bloco)) / CLOCKS_PER_SEC;
+    clock_gettime(CLOCK_REALTIME, &end); 
+    seconds = end.tv_sec - start.tv_sec; 
+    ns = end.tv_nsec - start.tv_nsec;
+    if (start.tv_nsec > end.tv_nsec) { // clock underflow 
+	    --seconds; 
+	    ns += 1000000000; 
+    }  
+    printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    m_free(m_c);
+    
+    printf("\nmult bloco\n");
+    //start_bloco = clock();
+    clock_gettime(CLOCK_REALTIME, &start); 
+    m_c = b_mult(b_a, b_b, qnt);
+    //end_bloco = clock();
+    //time = ((double) (end_bloco - start_bloco)) / CLOCKS_PER_SEC;
+    clock_gettime(CLOCK_REALTIME, &end); 
+    seconds = end.tv_sec - start.tv_sec; 
+    ns = end.tv_nsec - start.tv_nsec;
+    if (start.tv_nsec > end.tv_nsec) { // clock underflow 
+	    --seconds; 
+	    ns += 1000000000; 
+    }  
+    printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    //printf("levou %f\n", time);
+    //m_print(m_c);
+    m_free(m_c);
+    for(int i = 0; i < qnt; ++i) {
+        m_free(b_a[i]);
+        m_free(b_b[i]);
+    }
+
     printf("\nmult thread\n");
     th_args** args = t_alloc(m_a, m_b, qnt, n_threads);
     
@@ -66,7 +106,8 @@ int main(int argc, char *argv[]) {
         t_plus[i] = (matrix*) malloc(sizeof(matrix));
     }
     
-    start_thread = clock();
+    clock_gettime(CLOCK_REALTIME, &start); 
+    //start_thread = clock();
     for(int i = 0; i < n_threads; ++i){
         pthread_create(&threads[i], NULL, th_mult, (void*)args[i]);
     }
@@ -76,9 +117,26 @@ int main(int argc, char *argv[]) {
         t_plus[i] = args[i]->b_c;
     }
     m_c = b_plus(t_plus, n_threads);
-    end_thread = clock();
-    time = ((double) (end_thread - start_thread)) / CLOCKS_PER_SEC;
-    printf("levou %f\n", time);
+    clock_gettime(CLOCK_REALTIME, &end); 
+    seconds = end.tv_sec - start.tv_sec; 
+    ns = end.tv_nsec - start.tv_nsec;
+    if (start.tv_nsec > end.tv_nsec) { // clock underflow 
+	    --seconds; 
+	    ns += 1000000000; 
+    }  
+    printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    m_free(m_c);
+    for(int i = 0; i < n_threads; ++i){
+        m_free(t_plus[i]);
+        for(int j = 0; j < args[i]->qnt; ++j){
+            m_free(args[i]->b_a[j]);
+            m_free(args[i]->b_b[j]);
+        }
+    }
+    m_free(m_a);
+    m_free(m_b);
+    //end_thread = clock();
+    //time = ((double) (end_thread - start_thread)) / CLOCKS_PER_SEC;
     //m_print(m_c);
     
     //TESTE DIFERENÇA VELOCIDADE MATRIZ DUAS DIMENSÕES E UMA DIMENSÃO

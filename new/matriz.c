@@ -147,3 +147,12 @@ void m_free(matrix* m){
     free(m);
 }
 
+void m_file(matrix* m, FILE* f){
+    for (int i=0; i < m->row; i++) {
+        for (int j=0; j < m->col; j++){
+            fprintf(f,"%d ", m->datarow[j + (m->col * i)]);
+        }
+    fprintf(f,"\n");
+  }
+  return;
+}

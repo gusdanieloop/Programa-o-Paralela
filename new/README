@@ -1,0 +1,10 @@
+Para compilar:
+$ make
+
+Para executar:
+$ make run
+
+Para apagar arquivos
+$ make clear
+
+ps: não fiz comparação das matrizes, mas se você usa vscode, tem como verificar diferença entre dois arquivos, seja clicando com o direito no 1o arquivo e 'selecionar para comparar' e no 2o arquivo 'comparar com o selecionado', ou então, no terminal, code -d arquivo1 arquivo2.

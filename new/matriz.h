@@ -26,5 +26,6 @@ th_args** t_alloc(matrix* a, matrix* b, int qnt, int n_threads);
 void m_reset(matrix* m, int value);
 void m_print(matrix* m);
 void m_free(matrix* m);
+void m_file(matrix* m, FILE* f);
 
 #endif

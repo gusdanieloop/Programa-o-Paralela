@@ -5,14 +5,14 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <pthread.h>
+#include <omp.h>
 
 #include "matriz.h"
 #include "matriz_op.h"
 
 int main(int argc, char *argv[]) {
+    FILE* f;
     struct timespec start, end;
-    clock_t start_soma, end_soma, start_seq, end_seq, start_bloco, end_bloco, start_thread, end_thread;
-    double time;
     int n = 30, m = 30;
     int qnt = 10;
     int n_threads = 10;
@@ -24,13 +24,19 @@ int main(int argc, char *argv[]) {
     
     pthread_t* threads = (pthread_t*) malloc(n_threads * sizeof(pthread_t));
     
-    matrix* m_a = m_alloc(1000, 1000);
-    m_reset(m_a, 1);
+    matrix* m_a = m_alloc(n, m);
+    m_reset(m_a, -1);
+    f = fopen("A.map","w");
+    m_file(m_a, f);
+    fclose(f);
     matrix** b_a = divide(m_a, 1, qnt);
     //printf("MATRIZ A\n");
     //m_print(m_a);
-    matrix* m_b = m_alloc(1000, 1000);
-    m_reset(m_b, 1);
+    matrix* m_b = m_alloc(m, n);
+    m_reset(m_b, -1);
+    f = fopen("B.map","w");
+    m_file(m_b, f);
+    fclose(f);
     //printf("MATRIZ B\n");
     //m_print(m_b);
     matrix** b_b = divide(m_b, 0, qnt);
@@ -54,6 +60,10 @@ int main(int argc, char *argv[]) {
 	    ns += 1000000000; 
     }  
     printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+
+	f = fopen("soma_seq.result","w");
+    m_file(m_c, f);
+    fclose(f);
     m_free(m_c);
     
     printf("\nmult seq\n");
@@ -74,6 +84,9 @@ int main(int argc, char *argv[]) {
 	    ns += 1000000000; 
     }  
     printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    f = fopen("mult_seq.result","w");
+    m_file(m_c, f);
+    fclose(f);
     m_free(m_c);
     
     printf("\nmult bloco\n");
@@ -92,6 +105,9 @@ int main(int argc, char *argv[]) {
     printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
     //printf("levou %f\n", time);
     //m_print(m_c);
+    f = fopen("mult_bloco.result","w");
+    m_file(m_c, f);
+    fclose(f);
     m_free(m_c);
     for(int i = 0; i < qnt; ++i) {
         m_free(b_a[i]);
@@ -125,6 +141,9 @@ int main(int argc, char *argv[]) {
 	    ns += 1000000000; 
     }  
     printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    f = fopen("mult_thread.result","w");
+    m_file(m_c, f);
+    fclose(f);
     m_free(m_c);
     for(int i = 0; i < n_threads; ++i){
         m_free(t_plus[i]);
@@ -133,8 +152,40 @@ int main(int argc, char *argv[]) {
             m_free(args[i]->b_b[j]);
         }
     }
+
+
+    printf("\nmult omp\n");
+    args = t_alloc(m_a, m_b, qnt, n_threads);
+
+    t_plus = (matrix**) malloc(n_threads * sizeof(matrix*));
+    for(int i = 0; i < n_threads; ++i) {
+        t_plus[i] = (matrix*) malloc(sizeof(matrix));
+    }
+    
+    clock_gettime(CLOCK_REALTIME, &start);
+    int i; 
+    #pragma omp parallel for private(i)  
+    for(i = 0; i < n_threads; ++i){
+        th_mult((void*)args[i]);
+        t_plus[i] = args[i]->b_c;
+    }
+    m_c = b_plus(t_plus, n_threads);
+    clock_gettime(CLOCK_REALTIME, &end); 
+    seconds = end.tv_sec - start.tv_sec; 
+    ns = end.tv_nsec - start.tv_nsec;
+    if (start.tv_nsec > end.tv_nsec) { // clock underflow 
+	    --seconds; 
+	    ns += 1000000000; 
+    }  
+    printf("levou %f\n", (double)seconds + (double)ns/(double)1000000000);
+    f = fopen("mult_omp.result","w");
+    m_file(m_c, f);
+    fclose(f);
+    m_free(m_c);
     m_free(m_a);
     m_free(m_b);
+    
+    
     //end_thread = clock();
     //time = ((double) (end_thread - start_thread)) / CLOCKS_PER_SEC;
     //m_print(m_c);

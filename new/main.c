@@ -13,9 +13,9 @@
 int main(int argc, char *argv[]) {
     FILE* f;
     struct timespec start, end;
-    int n = 30, m = 30;
-    int qnt = 10;
-    int n_threads = 10;
+    int n = 1000, m = 1000;
+    int qnt = 2;
+    int n_threads = 8;
     init_random();
 
     if(n_threads > qnt){

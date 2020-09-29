@@ -19,7 +19,7 @@ Sendo:
     <nro_linhas_B> <nro_colunas_B>. respectivamente o número de linhas e colunas para a matriz B
     <n_blocos>. número de blocos para a multiplicação em bloco
 
-### Exemplo ###
-$ make clean;
-$ make;
+### Exemplo de Uso ###
+$ make clean
+$ make
 $ mpirun -np 4 -hostfile hostfile ./mainMPI 1000 1000 1000 1000 8

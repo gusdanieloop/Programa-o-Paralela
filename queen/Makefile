@@ -1,7 +1,8 @@
 CC = g++
 CCFLAGS = -Wall -fopenmp -O3
+CCFLAGSSERIAL = -Wall -O3
 LDFLAGS = 
-TARGET = main2 main3 clean help
+TARGET = main3serial main3 clean help
 
 all: $(TARGET)
 
@@ -19,6 +20,9 @@ main2: main2.cpp
 
 main3: main3.cpp
 	$(CC) $(CCFLAGS) main3.cpp -o $@ $(LDFLAGS)
+
+main3serial: main3serial.cpp
+	$(CC) $(CCFLAGSSERIAL) main3serial.cpp -o $@ $(LDFLAGS)
 
 clean:
 	rm *.o

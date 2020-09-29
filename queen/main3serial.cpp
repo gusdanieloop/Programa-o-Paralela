@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <omp.h>
+//#include <omp.h>
 #include <limits>
 #include <time.h>
 #include <sys/time.h>
@@ -17,27 +17,22 @@ double wtime(){
 
 int empty_spots(int** board, const int n){
     int soma = 0;
-    #pragma omp parallel
-    {
-        #pragma omp for reduction(+:soma)
-        for(int i = 0; i < n; ++i){
-            //#pragma omp parallel for reduction(+:soma)
-            for(int j = 0; j < n; ++j){
-                if(board[i][j] == 0){
-                    soma++;
-                }
+    //#pragma omp parallel for shared(board) reduction(+:soma)
+    for(int i = 0; i < n; ++i){
+        //#pragma omp parallel for shared(board) reduction(+:soma)
+        for(int j = 0; j < n; ++j){
+            if(board[i][j] == 0){
+                soma++;
             }
         }
-
     }
-    //#pragma omp parallel for reduction(+:soma)
     //#pragma omp barrier
     return soma;
 }
 
 void print_board(int** board, const int n){
     std::ofstream outfile;
-    outfile.open("saida_paralelo.txt");
+    outfile.open("saida.txt");
     for(int i = 0; i < n; ++i){
         for(int j = 0; j < n; ++j){
             if(board[i][j] == 1)
@@ -51,6 +46,7 @@ void print_board(int** board, const int n){
         }
         outfile << std::endl;
     }
+    outfile.close();
 }
 
 void print_positions(int** board, const int n){
@@ -184,52 +180,48 @@ void create_board(int** board, const int menor, int knights){
 
 void fill(int** board, const int menorx, const int menory, const int n){
     //#pragma omp barrier
-    #pragma omp parallel shared(board)
-    {
-        #pragma omp for schedule(static)
-        for(int i = 0; i < n; ++i){
-            //#pragma omp parallel for shared(board)
-            for(int j = 0; j < menory; ++j){
-                if(board[i][j] == 0){
-                    board[i][j] = -1;
-                }
-                else if(board[i][j] == 1){
-                    board[i+1][j+2] = -1;
-                    board[i+2][j+1] = -1;
-                }
+    //#pragma omp parallel for shared(board)
+    for(int i = 0; i < n; ++i){
+        //#pragma omp parallel for shared(board)
+        for(int j = 0; j < menory; ++j){
+            if(board[i][j] == 0){
+                board[i][j] = -1;
             }
+            else if(board[i][j] == 1){
+                board[i+1][j+2] = -1;
+                board[i+2][j+1] = -1;
+            }
+        }
+        //#pragma omp parallel for shared(board)
+        for(int j = 0; j < menorx; ++j){
+            if(board[j][i] == 0){
+                board[j][i] = -1;
+            }
+            else if(board[j][i] == 1){
+                board[j+1][i+2] = -1;
+                board[j+2][i+1] = -1;
+            }
+        }
+    }
+    //#pragma omp barrier
+    //#pragma omp parallel for shared(board)
+    for(int i = 0; i < menory; i+=2){
+        if(board[i][0] == 1){
             //#pragma omp parallel for shared(board)
-            for(int j = 0; j < menorx; ++j){
-                if(board[j][i] == 0){
-                    board[j][i] = -1;
-                }
-                else if(board[j][i] == 1){
-                    board[j+1][i+2] = -1;
-                    board[j+2][i+1] = -1;
+            for(int j = 0; j < n-i; ++j){
+                if(board[i+j][j] == 0){
+                    board[i+j][j] = -1;
                 }
             }
         }
-        //#pragma omp barrier
-        #pragma omp for schedule(static)
-        for(int i = 0; i < menory; i+=2){
-            if(board[i][0] == 1){
-                //#pragma omp parallel for shared(board)
-                for(int j = 0; j < n-i; ++j){
-                    if(board[i+j][j] == 0){
-                        board[i+j][j] = -1;
-                    }
-                }
-            }
-            if(board[0][i] == 1){
-                //#pragma omp parallel for shared(board)
-                for(int j = 0; j < n-i; ++j){
-                    if(board[j][j+i] == 0){
-                        board[j][j+i] = -1;
-                    }
+        if(board[0][i] == 1){
+            //#pragma omp parallel for shared(board)
+            for(int j = 0; j < n-i; ++j){
+                if(board[j][j+i] == 0){
+                    board[j][j+i] = -1;
                 }
             }
         }
-
     }
 }
 
@@ -274,77 +266,59 @@ int check_spot(int**board, const int menorx, const int menory, const int n, cons
 
 void fill_queen(int** board, const int menorx, const int menory, const int n, const int i, const int j){
     //#pragma omp parallel for shared(board)
-    int mini, startx, starty, mfim;
-    #pragma omp parallel sections private(mini,startx,starty,mfim) shared(board)
-    {
-        #pragma omp section
-            for(int jj = menory; jj < n; ++jj){
-                if(board[i][jj] == 0)
-                    board[i][jj] = -1;
-            }
-        #pragma omp section
-            for(int jj = menorx; jj < n; ++jj){
-                if(board[jj][j] == 0)
-                    board[jj][j] = -1;
-            }
-        #pragma omp section
-        {
-            mini = std::min(i-menorx, j-menory);
-            startx = i - mini;
-            starty = j - mini;
-            mfim = std::min(n-1-startx, n-1-starty);
-            //#pragma omp parallel for shared(board)
-            for(int k = 1; k <= mfim; ++k) {
-                if(board[startx+k][starty+k] == 0){
-                    board[startx+k][starty+k] = -1;
-                }
-            }
+    for(int jj = menory; jj < n; ++jj){
+        if(board[i][jj] == 0)
+            board[i][jj] = -1;
+    }
+    //#pragma omp parallel for shared(board)
+    for(int jj = menorx; jj < n; ++jj){
+        if(board[jj][j] == 0)
+            board[jj][j] = -1;
+    }
+    int mini = std::min(i-menorx, j-menory);
+    int startx = i - mini;
+    int starty = j - mini;
+    int mfim = std::min(n-1-startx, n-1-starty);
+    //#pragma omp parallel for shared(board)
+    for(int k = 1; k <= mfim; ++k) {
+        if(board[startx+k][starty+k] == 0){
+            board[startx+k][starty+k] = -1;
         }
-        #pragma omp section
-        {
-            mini = std::min(i-menorx, n-1-j);
-            startx = i - mini;
-            starty = j + mini;
-            mfim = std::min(n-1 - startx, starty - menory);
-            //#pragma omp parallel for shared(board)
-            for(int k = 1; k <= mfim; ++k) {
-                if(board[startx+k][starty-k] == 0){
-                    board[startx+k][starty-k] = -1;
-                }
-            }
+    }
+
+    mini = std::min(i-menorx, n-1-j);
+    startx = i - mini;
+    starty = j + mini;
+    mfim = std::min(n-1 - startx, starty - menory);
+    //#pragma omp parallel for shared(board)
+    for(int k = 1; k <= mfim; ++k) {
+        if(board[startx+k][starty-k] == 0){
+            board[startx+k][starty-k] = -1;
         }
     }
 }
 
 void check_queens(int** board, const int menorx, const int menory, const int n){
     int melhor;
-    //int* quant = (int*) malloc (sizeof(int) * (n) * (n)); 
-    int melhory = 0, melhorx = 0;
+    int melhory, melhorx;
     int aux = 0;
     int cont = empty_spots(board, n);
     //omp_set_nested(1);
     while(cont > 0){
         melhor = std::numeric_limits<int>::max();
         //#pragma omp parallel for shared(melhor, melhorx, melhory, board) private(aux) 
-        #pragma omp parallel shared(melhor, melhorx, melhory) private(aux)
-        {
-            #pragma omp for 
-            for(int i = menorx; i < n; ++i){
-                for(int j = menory; j < n; ++j){
-                    if(board[i][j] == 0){
-                        aux = check_spot(board, menorx, menory, n, i, j);
-                        //quant[(i*n) + j] = check_spot(board, menorx, menory, n, i, j);
-                        //#pragma omp critical
-                        //{
-                        #pragma omp critical
-                        {
-                            if(aux < melhor){
-                                melhor = aux;
-                                melhorx = i;
-                                melhory = j;
-                            }
+        for(int i = menorx; i < n; ++i){
+            //#pragma omp parallel for shared(melhor, melhorx, melhory, board) private(aux)
+            for(int j = menory; j < n; ++j){
+                if(board[i][j] == 0){
+                    aux = check_spot(board, menorx, menory, n, i, j);
+                    //#pragma omp critical
+                    {
+                        if(aux < melhor){
+                            melhor = aux;
+                            melhorx = i;
+                            melhory = j;
                         }
-                        //}
                     }
                 }
             }
